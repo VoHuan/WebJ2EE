@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/" xmlns="http://www.w3.org/1999/html">
+<head th:replace="~{fragments::header}">
+    <link th:href="@{css/mystyle.css}" rel="stylesheet">
+</head>
+
+<body id="page-top">
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="~{fragments::sidebar}">
+    </ul>
+    <!-- End of Sidebar -->
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+
+            <!-- Topbar -->
+            <nav th:replace="~{fragments::top-navbar}">
+            </nav>
+            <!-- End of Topbar -->
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+                <div class="input-group" style="width: 30%; margin-bottom: 20px;">
+                    <form th:action="@{/search-products/0}" method="get">
+                        <input type="text" class="form-control rounded" placeholder="Search" name="keyword"
+                               aria-label="Search"
+                               aria-describedby="search-addon"/>
+                        <button type="submit" class="btn btn-outline-primary">search</button>
+                    </form>
+                </div>
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal"
+                        data-whatever="@mdo">Add new Product
+                </button>
+                <p th:if="${size == 0} ">No Products</p>
+                <div th:if="${success}" class="text-center alert alert-success">
+                    <p th:text="${success}"></p>
+                </div>
+                <div th:if="${error}" class="text-center alert alert-danger">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <table class="styled-table">
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Image</th>
+                        <th>Description</th>
+                        <th>Name Category</th>
+                        <th>Color</th>
+                        <th>Quantity</th>
+                        <th>Action</th>
+                    </tr>
+
+                    <tr th:each="product : ${listProducts}">
+                        <td scope="row" th:text="${product.Name}"></td>
+                        <td th:text="${product.price}"></td>
+                        <td>
+                            <img class="product-image" th:src="@{'../img/' + ${product.image}}" alt="Product Image">
+                        </td>
+                        <td th:text="${product.description}"></td>
+                        <td th:text="${product.category.getName()}"></td>
+                        <td th:text="${product.color}"></td>
+                        <td th:text="${product.quantity}"></td>
+                        <td>
+                            <a id="editButton" th:href="@{/update-product/{id}(id=${product.id})}"
+                               class="btn btn-primary">Update</a>
+                            <a th:href="@{/status-product(id = ${product.id})}" class="btn btn-danger">Delete</a>
+                            <a id="detailButton" th:href="@{/detail-product/{id}(id=${product.id})}"
+                               class="btn btn-success">Detail</a>
+                        </td>
+                    </tr>
+                </table>
+
+                <!--Pagination  -->
+                <nav aria-label="...">
+                    <ul class="pagination">
+                        <li th:if="${currentPage != 0}" class="page-item ">
+                            <a th:href="@{'/product/' + ${currentPage - 1}}" class="page-link">Previous</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                            th:classappend="${currentPage == i - 1 ? 'active' : ''}" class="page-item">
+                            <a th:href="@{'/product/' + ${i - 1}}" class="page-link" href="#">
+				     <span th:text="${i}">
+				     </span></a></li>
+                        <li th:if="${currentPage + 1 != totalPages}" class="page-item">
+                            <a th:href="@{'/product/' + ${currentPage + 1}}" class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+                <!--Pagination  -->
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <footer th:replace="~{fragments::footer}">
+        </footer>
+        <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a th:replace="~{fragments::scroll}">
+</a>
+
+<!--Add Modal-->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <form id="productForm" th:action="@{/add-product}" method="post" enctype="multipart/form-data" th:object="${productNew}">
+        <div class="modal-dialog custom-modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Sản Phẩm mới</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                            <label for="nameAdd" class="col-md-8 control-label">Tên sản phẩm:</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" th:field="*{name}" id="nameAdd" name="name" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-8 control-label" for="category"> Danh mục</label>
+                        <div class="col-md-8">
+                            <select id="category" th:field="*{category}" name="category" class="form-control">
+                                <option th:each="category : ${categories}"
+                                        th:value="${category.id}"
+                                        th:text="${category.name}"
+                                ></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-8 control-label" for="color">Color:</label>
+                            <div class="col-md-8">
+                                <input type="text" id="color" name="color" required>
+                            </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-12 control-label" for="product-quantity">Số lượng Màu</label>
+                        <div class="col-md-8">
+                            <input id="product-quantity" th:field="*{quantity}" name="quantity"
+                                   class="form-control input-md" type="number" value="1" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-8 control-label" for="price">Giá</label>
+                        <div class="col-md-8">
+                            <input id="price" th:field="*{price}" name="price" class="form-control input-md"
+                                   type="text" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-8 control-label" for="description">Mô Tả </label>
+                        <div class="col-md-8">
+                            <input id="description" th:field="*{description}" name="description"
+                                   class="form-control input-md" required
+                                   type="text">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-8">
+                            <!-- File Button -->
+                            <div class="form-group">
+                                <label class="col-md-4 control-label" for="photo_file">IMAGE</label>
+                                <div class="col-md-4">
+                                    <input id="photo_file" type="file" name="photo_file" accept="image/*" required/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" onclick="saveProduct(event)">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<style>
+    .form-group {
+      margin-bottom: 10px;
+  }
+
+  .control-label {
+      display: inline-block;
+      width: 150px;
+  }
+  .custom-modal-dialog {
+  width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  }
+</style>
+    <!-- Bootstrap core JavaScript-->
+    <div th:replace="~{fragments::script}"></div>
+    <script th:src="@{/js/product.js}"></script>
+</body>
+
+</html>

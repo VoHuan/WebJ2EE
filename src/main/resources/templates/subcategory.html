@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{index::header}">
+</head>
+<body>
+<div class="span9">
+    <ul class="breadcrumb">
+        <li><a th:href="@{/index}">Home</a> <span class="divider"></span></li>
+        <li class="active" th:text="${category.name}"></li>
+    </ul>
+    <form class="form-horizontal span6">
+        <div class="control-group">
+            <label class="control-label alignL">Sắp Xếp</label>
+            <select>
+                <option>Tên sản phẩm A - Z</option>
+                <option>Tên sản phẩm Z - A</option>
+                <option>Số lượng sản phẩm</option>
+                <option>Giá từ thấp đến cao</option>
+            </select>
+        </div>
+    </form>
+
+    <div id="myTab" class="pull-right">
+        <a href="#listView" data-toggle="tab"><span class="btn btn-large"><i class="icon-list"></i></span></a>
+        <a href="#blockView" data-toggle="tab"><span class="btn btn-large btn-primary"><i
+                class="icon-th-large"></i></span></a>
+    </div>
+    <br class="clr"/>
+    <div class="tab-content">
+        <div class="tab-pane" id="listView">
+            <div class="row">
+                <div class="span2">
+
+                </div>
+                <div class="span4">
+                    <h3>
+                        <localize>New | Available</localize>
+                    </h3>
+                    <hr class="soft"/>
+                    <h5>@item.Name</h5>
+                    <p>@item.Description</p>
+                    <a class="btn btn-small pull-right" th:href="@{product-details}">Xem chi tiết</a>
+                    <br class="clr"/>
+                </div>
+                <div class="span3 alignR">
+                    <form class="form-horizontal qtyFrm">
+                        <h3>@item.Price.ToString()</h3>
+                        <label class="checkbox">
+                            <input type="checkbox"> Adds product to compair
+                        </label><br/>
+
+                        <a href="product_details.html" class="btn btn-large btn-primary">Add to<i
+                                class=" icon-shopping-cart"></i></a>
+                        <a href="product_details.html" class="btn btn-large"><i class="icon-zoom-in"></i></a>
+                    </form>
+                </div>
+            </div>
+            <hr class="soft"/>
+            }
+        </div>
+
+        <div class="tab-pane active" id="blockView">
+            <ul class="thumbnails">
+                <li class="span3" th:each="product : ${products}">
+                    <div class="thumbnail">
+                        <div class="caption">
+                            <a th:href="@{/product-details/{id}(id=${product.id})}">
+                                <h5 th:text="${product.name}"></h5>
+                                <p th:text="${product.description}">
+                                </p>
+                                <img class="d-block w-100" style="height: 300px; width: 300px;" th:src="'data:image/jpeg;base64,' + ${product.image}"
+                                     alt="First slide">
+                                <h4 style="text-align:center">
+                                    <a class="btn" href="product_details.html"><i class="icon-zoom-in"></i></a>
+                                    <a class="btn" th:href="@{cart/add-to-cart}">Add to <i class="icon-shopping-cart"></i></a>
+                                    <a class="btn btn-primary" href="#"></a>
+                                </h4>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <hr class="soft"/>
+        </div>
+    </div>
+</div>
+<footer th:replace="~{index::footer}"></footer>
+</body>
+</html>

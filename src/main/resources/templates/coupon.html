@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head th:replace="~{fragments::header}">
+
+</head>
+
+<body id="page-top">
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="~{fragments::sidebar}">
+    </ul>
+    <!-- End of Sidebar -->
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+
+            <!-- Topbar -->
+            <nav th:replace="~{fragments::top-navbar}">
+            </nav>
+            <!-- End of Topbar -->
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+                <div class="input-group" style="width: 30%; margin-bottom: 20px;">
+                    <form th:action="@{/search-coupon/0}" method="get">
+                        <input type="text" class="form-control rounded" placeholder="Search" name="keyword"
+                               aria-label="Search"
+                               aria-describedby="search-addon"/>
+                        <button type="submit" class="btn btn-outline-primary">search</button>
+                    </form>
+                </div>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal"
+                        data-whatever="@mdo">Add new coupon
+                </button>
+                <p th:if="${size == 0} ">No Products</p>
+                <div th:if="${success}" class="text-center alert alert-success">
+                    <p th:text="${success}"></p>
+                </div>
+                <div th:if="${error}" class="text-center alert alert-danger">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <table class="styled-table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Code</th>
+                        <th>Count</th>
+                        <th>promotion</th>
+                        <th>describe</th>
+                        <th>Action</th>
+                    </tr>
+
+                    <tr th:each="coupon : ${listCoupon}">
+                        <td th:text="${coupon.Id}"></td>
+                        <td th:text="${coupon.Code}"></td>
+                        <td th:text="${coupon.Count}"></td>
+                        <td th:text="${coupon.promotion}"></td>
+                        <td th:text="${coupon.description}"></td>
+                        <td>
+                            <a id="editButton" th:href="@{/findByIdCoupon/{id}(id=${coupon.Id})}"
+                               class="btn btn-primary">Update</a>
+                            <!--<a th:if="${coupon.is_deleted} == true" th:href="@{/enable-coupon(id = ${coupon.id})}"
+                               class="btn btn-primary">Enable</a>
+                            <a th:if="${coupon.is_deleted} == false"
+                               th:href="@{/delete-coupon(id = ${coupon.id})}"
+                               class=" btn btn-danger">Delete</a>-->
+                        </td>
+                    </tr>
+                </table>
+
+                <nav aria-label="...">
+                    <ul class="pagination">
+                        <li th:if="${currentPage != 0}" class="page-item ">
+                            <a th:href="@{'/coupon/' + ${currentPage - 1}}" class="page-link">Previous</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                            th:classappend="${currentPage == i - 1 ? 'active' : ''}" class="page-item">
+                            <a th:href="@{'/coupon/' + ${i - 1}}" class="page-link" href="#">
+				     <span th:text="${i}">
+				     </span></a></li>
+                        <li th:if="${currentPage + 1 != totalPages}" class="page-item">
+                            <a th:href="@{'/coupon/' + ${currentPage + 1}}" class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+                <!--Pagination  -->
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <footer th:replace="~{fragments::footer}">
+        </footer>
+        <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a th:replace="~{fragments::scroll}">
+</a>
+
+<!--Add Modal-->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <form id="couponForm" th:action="@{/add-coupon}" method="post" th:object="${couponNew}">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New Coupon</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="code" class="col-form-label">Code:</label>
+                        <input id="code" type="text" class="form-control" th:field="*{code}" name="couponCode" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="countAdd" class="col-form-label">Count:</label>
+                        <input id="countAdd" type="text" class="form-control" th:field="*{count}" name="couponCount" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="promotionAdd" class="col-form-label">Promotion:</label>
+                        <input id="promotionAdd" type="text" class="form-control" th:field="*{promotion}"
+                               name="couponPromotion" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descriptionAdd" class="col-form-label">Describe:</label>
+                        <input id="descriptionAdd" type="text" class="form-control" th:field="*{description}"
+                               name="couponDescription" required>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" onclick="saveCoupon(event)">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--end-->
+<!--Change Name category Modal-->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalExample"
+     aria-hidden="true">
+    <form id="editForm" th:action="@{/update-coupon}" method="PUT">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Coupon</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="idEdit" class="col-form-label">Id:</label>
+                        <input type="text" class="form-control" id="idEdit" name="id" required readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="codeEdit" class="col-form-label">Code:</label>
+                        <input id="codeEdit" type="text" class="form-control" name="code" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="countEdit" class="col-form-label">Count:</label>
+                        <input id="countEdit" type="text" class="form-control" name="count" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="promotionEdit" class="col-form-label">Promotion:</label>
+                        <input id="promotionEdit" type="text" class="form-control" name="promotion" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descriptionEdit" class="col-form-label">Describe:</label>
+                        <input id="descriptionEdit" type="text" class="form-control" name="description" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" onclick="saveCouponEdit(event)">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Bootstrap core JavaScript-->
+<div th:replace="~{fragments::script}"></div>
+<script th:src="@{/js/coupon.js}"></script>
+</body>
+
+</html>

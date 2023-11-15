@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head th:replace="~{index::header}">
+</head>
+<body>
+
+<nav th:replace="~{index::navigation}"></nav>
+<!-- Start Shop Detail  -->
+<div class="shop-detail-box-main">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-5 col-lg-5 col-md-6">
+                <div id="carousel-example-1" class="single-product-slider carousel slide" data-ride="carousel">
+                    <div class="carousel-inner" role="listbox">
+                        <div class="carousel-item active">
+                            <img class="product-image" th:src="@{'/img/' + ${productDetail.image}}">
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-7 col-lg-7 col-md-6">
+               <!-- <form th:action="@{/cart/add-to-cart}" method="post">-->
+                    <div class="single-product-details">
+                        <h2 th:text="${productDetail.name}"></h2>
+
+                        <div>
+                            <h3 th:text="${productDetail.price}" class="product-price"></h3>
+                            <div th:if="${productDetail.quantity <= 0}">
+                                <span class="product-available">Hết hàng</span>
+                            </div>
+                            <div th:else>
+                                <span class="product-available">Còn hàng</span>
+                            </div>
+                        </div>
+                        <ul class="product-links">
+                            <li>Danh mục:</li>
+                            <li th:text="${productDetail.category.name}"></li>
+                        </ul>
+                        <p th:text="${productDetail.description}"></p>
+                        <div class="price-box-bar">
+                            <!--<div class="cart-and-bay-btn">
+                                <input type="hidden" th:value="${productDetail.id}" name="id" class="form-control">
+                                <input type="submit" class="btn hvr-hover" value="Thêm vào giỏ hàng">
+                            </div>-->
+                            <div class="add-to-cart" style="margin-top:10px">
+                                <button class="add-to-cart-btn" th:value="${productDetail.id}"><i
+                                        class="fa fa-shopping-cart"></i> thêm vào giỏ hàng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <!--</form>-->
+            </div>
+
+            <div class="col-md-12">
+                <div id="product-tab">
+                    <!-- product tab nav -->
+                    <ul class="tab-nav">
+                        <li class="active"><a data-toggle="tab" href="#tab1">Thông số kỹ thuật</a></li>
+                        <li><a data-toggle="tab" href="#tab2">Chi tiết sản phẩm</a></li>
+                        <li><a data-toggle="tab" href="#tab3">Đánh giá</a></li>
+                    </ul>
+                    <!-- /product tab nav -->
+                    <!-- product tab content -->
+                    <div class="tab-content">
+                        <!-- tab1  -->
+                        <div id="tab1" class="tab-pane fade in active">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p th:text="${productDetail.description}"></p>
+                                    <!--  @{
+                                      string html = @Model.Product.Description;
+                                      string removeFirstFigure = html.Remove(0, 22);
+                                      string removeLastFigure = removeFirstFigure.Remove(removeFirstFigure.Length - 9);
+                                      string addedTableFormat = removeLastFigure.Insert(6, " class=\"table table-bordered table-striped\"");
+                                      }
+                                      @Html.Raw(addedTableFormat)
+                                      @*@Html.Raw(Model.Product.Description)*@-->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /tab1  -->
+                        <!-- tab2  -->
+                        <div id="tab2" class="tab-pane fade in">
+                            <div class="row">
+                                <style>
+                                    #more {
+                                        display: none;
+                                    }
+                                </style>
+                                <div class="col-md-12">
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /tab2  -->
+                        <!-- tab3  -->
+                        <div id="tab3" class="tab-pane fade in">
+                            <!--<div class="row">
+                                @foreach (var c in comments)
+                                {
+                                <hr />
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <span style="font-weight:bold">@c.UserName</span> <br />
+                                        <i>@c.PublishedDate</i>
+                                        <br />
+                                        @for (var i = 1; i <= c.Rating; i++)
+                                        {
+                                        <span class="starGlowN"></span>
+                                        }
+                                        @for (var i = (c.Rating + 1); i <= 5; i++)
+                                        {
+                                        <span class="starFadeN"></span>
+                                        }
+                                    </div>
+                                    <div class="col-md-9">
+                                        @Html.Raw(c.Comments.Replace("\n", "<br />"))
+                                    </div>
+                                </div>
+                                }
+                                <hr />
+                                <partial name="_CommentBox" />
+                            </div>-->
+                        </div>
+                        <!-- /tab3  -->
+                    </div>
+                    <!-- /product tab content  -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+
+
+<footer th:replace="~{index::footer}"></footer>
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/slick.min.js"></script>
+<script src="/js/nouislider.min.js"></script>
+<script src="/js/jquery.zoom.min.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/site.js"></script>
+<script src="/js/cart.js"></script>
+<script>
+    var siteController = new SiteController();
+    siteController.initialize();
+</script>
+</body>
+</html>

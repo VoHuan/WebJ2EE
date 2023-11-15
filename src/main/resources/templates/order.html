@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head th:replace="~{fragments::header}">
+
+</head>
+
+<body id="page-top">
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="~{fragments::sidebar}">
+    </ul>
+    <!-- End of Sidebar -->
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+
+            <!-- Topbar -->
+            <nav th:replace="~{fragments::top-navbar}">
+            </nav>
+            <!-- End of Topbar -->
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+                <div class="input-group" style="width: 30%; margin-bottom: 20px;">
+                    <form th:action="@{/search-order/0}" method="get">
+                        <input type="text" class="form-control rounded" placeholder="Search" name="keyword"
+                               aria-label="Search"
+                               aria-describedby="search-addon"/>
+                        <button type="submit" class="btn btn-outline-primary">search</button>
+                    </form>
+                </div>
+                <p th:if="${size == 0} ">No Products</p>
+                <div th:if="${success}" class="text-center alert alert-success">
+                    <p th:text="${success}"></p>
+                </div>
+                <div th:if="${error}" class="text-center alert alert-danger">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <table class="styled-table">
+                    <tr>
+                        <th>ID</th>
+                        <th>ID Customer</th>
+                        <th>Order Date</th>
+                        <th>Status</th>
+                        <th>Total Order</th>
+                        <th>Action</th>
+                    </tr>
+
+                    <tr th:each="orders : ${listOrder}">
+                        <td th:text="${orders.Id}"></td>
+                        <td th:text="${orders.customer.getId()}"></td>
+                        <td th:text="${orders.orderDate}"></td>
+                        <td th:text="${orders.Status}"></td>
+                        <td th:text="${orders.total}"></td>
+                        <td>
+                            <a th:if="${orders != null}" th:href="@{/orderdetail(orderId=${orders.Id})}">Xem Chi Tiết</a>
+                        </td>
+                    </tr>
+                </table>
+
+                <!--Pagination  -->
+                <nav aria-label="...">
+                    <ul class="pagination">
+                        <li th:if="${currentPage != 0}" class="page-item ">
+                            <a th:href="@{'/order/' + ${currentPage - 1}}" class="page-link">Previous</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                            th:classappend="${currentPage == i - 1 ? 'active' : ''}" class="page-item">
+                            <a th:href="@{'/order/' + ${i - 1}}" class="page-link" href="#">
+				     <span th:text="${i}">
+				     </span></a></li>
+                        <li th:if="${currentPage + 1 != totalPages}" class="page-item">
+                            <a th:href="@{'/order/' + ${currentPage + 1}}" class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+                <!--Pagination  -->
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <footer th:replace="~{fragments::footer}">
+        </footer>
+        <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a th:replace="~{fragments::scroll}">
+</a>
+
+
+<!-- Bootstrap core JavaScript-->
+<div th:replace="~{fragments::script}"></div>
+</body>
+
+</html>

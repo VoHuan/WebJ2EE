@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head th:replace="~{fragments::header}">
+
+</head>
+
+<body id="page-top">
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul th:replace="~{fragments::sidebar}">
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+            <!-- Topbar -->
+            <nav th:replace="~{fragments::top-navbar}">
+            </nav>
+            <!-- End of Topbar -->
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+                <div class="input-group" style="width: 30%; margin-bottom: 20px;">
+                    <form th:action="@{/search-customer/0}" method="get">
+                        <input type="text" class="form-control rounded" placeholder="Search" name="keyword"
+                               aria-label="Search"
+                               aria-describedby="search-addon"/>
+                        <button type="submit" class="btn btn-outline-primary">search</button>
+                    </form>
+                </div>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal" data-whatever="@mdo">Add new customer</button>
+                <p th:if="${size == 0} ">No Products</p>
+                <div th:if="${success}" class="text-center alert alert-success">
+                    <p th:text="${success}"></p>
+                </div>
+                <div th:if="${error}" class="text-center alert alert-danger">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <table class="styled-table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>phoneNumber</th>
+                        <th>address</th>
+                        <th>email</th>
+                        <th>Action</th>
+                    </tr>
+
+                    <tr th:each="customer : ${listCustomer}">
+                        <td th:text="${customer.Id}"></td>
+                        <td th:text="${customer.Name}"></td>
+                        <td th:text="${customer.PhoneNumber}"></td>
+                        <td th:text="${customer.Address}"></td>
+                        <td th:text="${customer.Email}"></td>
+                        <td>
+                           <a th:if="${customer.statusCustomer} == 1" th:href="@{/block-customer(id = ${customer.id})}"
+                               class="btn btn-primary">Block</a>
+                            <a th:if="${customer.statusCustomer} == 0" th:href="@{/unlock-customer(id = ${customer.id})}"
+                               class=" btn btn-danger">UnLock</a>
+                        </td>
+                    </tr>
+                </table>
+
+                <!--Pagination  -->
+                <nav aria-label="...">
+                    <ul class="pagination">
+                        <li th:if="${currentPage != 0}" class="page-item ">
+                            <a th:href="@{'/customer/' + ${currentPage - 1}}" class="page-link">Previous</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                            th:classappend="${currentPage == i - 1 ? 'active' : ''}" class="page-item">
+                            <a th:href="@{'/customer/' + ${i - 1}}" class="page-link" href="#">
+				     <span th:text="${i}">
+				     </span></a></li>
+                        <li th:if="${currentPage + 1 != totalPages}" class="page-item">
+                            <a th:href="@{'/customer/' + ${currentPage + 1}}" class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+                <!--Pagination  -->
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <footer th:replace="~{fragments::footer}">
+        </footer>
+        <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a th:replace="~{fragments::scroll}">
+</a>
+
+<!--Add Modal-->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <form id="customerForm" th:action="@{/add-customer}" method="post" th:object="${customerNew}">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New Customer</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="nameAdd" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control"  th:field = "*{name}" id="nameAdd" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phoneAdd" class="col-form-label">Phone Number:</label>
+                        <input type="text" class="form-control"  th:field = "*{phoneNumber}" id="phoneAdd" name="phoneNumber" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="addressAdd" class="col-form-label">Address:</label>
+                        <input type="text" class="form-control"  th:field = "*{address}"  id="addressAdd" name="address" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emailAdd" class="col-form-label">Email:</label>
+                        <input type="text" class="form-control"  th:field = "*{email}" id="emailAdd" name="email" required>
+                    </div>
+
+                    <div th:if="${error}" class="alert alert-danger" role="alert">
+                        <span th:text="${error}"></span>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" onclick="saveCustomer(event)">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--end-->
+<!--Change Name category Modal-->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalExample" aria-hidden="true">
+    <form id="editForm" th:action="@{/update-customer}" method="PUT">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Customer</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="idEdit" class="col-form-label">Id:</label>
+                        <input type="text" class="form-control"  id="idEdit" name="id" readonly required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nameEdit" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control"  id="nameEdit" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phoneEdit" class="col-form-label">Phone Number:</label>
+                        <input type="text" class="form-control"  id="phoneEdit" name="phoneNumber" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="addressEdit" class="col-form-label">Address:</label>
+                        <input type="text" class="form-control"  id="addressEdit" name="address" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emailEdit" class="col-form-label">Email:</label>
+                        <input type="text" class="form-control"  id="emailEdit" name="email" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" onclick="saveCustomerEdit(event)">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Bootstrap core JavaScript-->
+<div th:replace="~{fragments::script}"></div>
+<script th:src="@{/js/customer.js}"></script>
+</body>
+
+</html>
